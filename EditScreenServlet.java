@@ -1,0 +1,93 @@
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class EditScreenServlet
+ */
+@WebServlet("/EditScreenServlet")
+public class EditScreenServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public EditScreenServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+	    final String query = "SELECT BOOKNAME,EDITION,PRICE FROM BOOKDATA where id=?";
+
+		 PrintWriter pw = response.getWriter();
+	        //set content type
+	        response.setContentType("text/html");
+	        //get the id of record
+	        int id = Integer.parseInt(request.getParameter("id"));
+	        //LOAD jdbc driver
+	        try {
+	            Class.forName("com.mysql.cj.jdbc.Driver");
+	        } catch (ClassNotFoundException cnf) {
+	            cnf.printStackTrace();
+	        }
+	        //generate the connection
+	        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/book","root","Selva@1234"); PreparedStatement ps = con.prepareStatement(query);) {
+	            ps.setInt(1, id);
+	            ResultSet rs = ps.executeQuery();
+	            rs.next();
+	            pw.println("<form action='EditServlet?id=" + id + "' method='post'>");
+	            pw.println("<table align='center'>");
+	            pw.println("<tr>");
+	            pw.println("<td>Book Name</td>");
+	            pw.println("<td><input type='text' name='bookName' value='" + rs.getString(1) + "'></td>");
+	            pw.println("</tr>");
+	            pw.println("<tr>");
+	            pw.println("<td>Book Edition</td>");
+	            pw.println("<td><input type='text' name='bookEdition' value='" + rs.getString(2) + "'></td>");
+	            pw.println("</tr>");
+	            pw.println("<tr>");
+	            pw.println("<td>Book Price</td>");
+	            pw.println("<td><input type='text' name='bookPrice' value='" + rs.getFloat(3) + "'></td>");
+	            pw.println("</tr>");
+	            pw.println("<tr>");
+	            pw.println("<td><input type='submit' value='Edit'></td>");
+	            pw.println("<td><input type='reset' value='cancel'></td>");
+	            pw.println("</tr>");
+	            pw.println("</table>");
+	            pw.println("</form>");
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	            pw.println("<h1>" + se.getMessage() + "</h2>");
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            pw.println("<h1>" + e.getMessage() + "</h2>");
+	        }
+	        pw.println("<a href='Index.html'>Home</a>");
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
