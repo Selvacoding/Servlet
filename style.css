@@ -1,0 +1,13 @@
+@charset "UTF-8";
+.body{
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	color:#004080;
+	font-size:30px;
+	background-color:#ff8080;
+}
+.table{
+	border-color:#80ffff;
+	padding: 2em;	
+}
